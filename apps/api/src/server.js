@@ -1,5 +1,6 @@
 const express = require('express');
 const pino = require('pino');
+const mongoose = require('mongoose');
 
 const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
@@ -144,6 +145,17 @@ module.exports = { createApp, updateSourceHealth, setListingsCache, logger };
 if (require.main === module) {
   require('dotenv').config({ path: '../../.env' });
   const port = process.env.API_PORT || 3000;
+  
+  // Connect to MongoDB
+  const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/job-ingestion';
+  mongoose.connect(mongoUri)
+    .then(() => logger.info(`Connected to MongoDB at ${mongoUri}`))
+    .catch((err) => logger.error({ err }, 'Failed to connect to MongoDB'));
+
+  // Initialize Orchestrator
+  const { initOrchestrator } = require('./queue/orchestrator.js');
+  initOrchestrator();
+
   const app = createApp();
   app.listen(port, () => {
     logger.info(`API server running on http://localhost:${port}`);
