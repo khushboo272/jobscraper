@@ -199,10 +199,10 @@ module.exports = { createApp };
 
 // ----- Start server if run directly -----
 if (require.main === module) {
-  const port = process.env.SANDBOX_PORT || 3001;
+  const port = process.env.PORT || process.env.SANDBOX_PORT || 3001;
   const app = createApp();
-  app.listen(port, () => {
-    console.log(`Sandbox hostile source running on http://localhost:${port}`);
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`Sandbox hostile source running on port ${port}`);
     console.log('Chaos toggle: POST /admin/chaos { "enabled": true }');
   });
 }

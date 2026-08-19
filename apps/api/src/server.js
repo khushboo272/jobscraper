@@ -193,7 +193,7 @@ module.exports = { createApp, updateSourceHealth, setListingsCache, logger };
 // --- Start server if run directly ---
 if (require.main === module) {
   require('dotenv').config({ path: '../../.env' });
-  const port = process.env.API_PORT || 3000;
+  const port = process.env.PORT || process.env.API_PORT || 3000;
   
   // Connect to MongoDB
   const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/job-ingestion';
@@ -206,7 +206,7 @@ if (require.main === module) {
   initOrchestrator();
 
   const app = createApp();
-  app.listen(port, () => {
-    logger.info(`API server running on http://localhost:${port}`);
+  app.listen(port, '0.0.0.0', () => {
+  logger.info(`API server running on port ${port}`);
   });
 }

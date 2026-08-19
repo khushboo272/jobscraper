@@ -139,6 +139,26 @@ jobscraper/
 
 ---
 
+## Frontend Disclaimer
+As per the assignment focus (Part 1 - scraper), the frontend (`apps/dashboard`) is provided **purely for testing and visualization purposes**. It exists to prove the ingestion pipeline works end-to-end and to demonstrate the chaos toggle in real-time. It is not a fully polished production UI.
+
+---
+
+## Deployment Process
+
+The project is configured for easy deployment on free-tier hosting:
+
+1. **Database & Redis:** 
+   Use a managed service like MongoDB Atlas (free tier) and Redis Labs (free tier). Set `MONGO_URI`, `REDIS_HOST`, and `REDIS_PORT` in your hosting environment.
+   
+2. **API Backend & Sandbox (Render):**
+   The project includes a `render.yaml` blueprint. Connect your GitHub repo to Render and it will automatically deploy `job-ingestion-api` and `job-ingestion-sandbox` as separate web services.
+   
+3. **Frontend Dashboard (Vercel):**
+   The project includes a `vercel.json` config. Connect your repo to Vercel, set the root directory to `apps/dashboard`, and add the `VITE_API_URL` environment variable pointing to your deployed Render API.
+
+---
+
 ## Key Design Documents
 - **[DESIGN.md](DESIGN.md)** — Detection surface analysis, ingestion strategy, resilience engine, ethics line
 - **[DECISIONS.md](DECISIONS.md)** — Strategy trade-offs, time-boxed compromises, AI usage disclosure

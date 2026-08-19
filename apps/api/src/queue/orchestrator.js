@@ -10,7 +10,9 @@ const { createQueueConfig, getJitteredDelay } = require('./queueConfig.js');
 // Redis Connection
 const connection = process.env.NODE_ENV === 'test' ? null : new Redis({
   host: process.env.REDIS_HOST || 'localhost',
-  port: process.env.REDIS_PORT || 6379,
+  port: Number(process.env.REDIS_PORT || 6379),
+  password: process.env.REDIS_PASSWORD,
+  tls: process.env.NODE_ENV === 'production' ? {} : undefined,
   maxRetriesPerRequest: null,
 });
 

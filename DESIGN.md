@@ -77,7 +77,7 @@ MongoDB documents store both `normalized` fields and a `raw` blob + `sourceVersi
 
 ---
 
-## 4. Ethics Line
+## 4. Where You'd Stop (Ethics Line)
 
 - We do not scrape sources that require authentication we don't own, or that explicitly disallow automated access in their ToS/robots.txt.
 - The live demo only touches sources that are either explicitly public/API-first or entirely self-hosted sandboxes.

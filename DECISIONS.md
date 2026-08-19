@@ -1,6 +1,6 @@
 # DECISIONS.md
 
-## 1. Ingestion Strategy vs. Rejected Alternative
+## 1. Why this ingestion strategy over the obvious alternative you rejected?
 
 **Chosen:** Tiered escalation (Tier 0: API → Tier 1: static HTML → Tier 2: headless browser). Each tier is tried in order; escalation only happens when the cheaper method fails or returns empty.
 
@@ -10,7 +10,7 @@ The strategy pattern (`StaticFetchStrategy` / `BrowserFetchStrategy`) allows con
 
 ---
 
-## 2. One Time-Boxed Trade-Off
+## 2. One trade-off made under the time limit, and what you'd do with a real week
 
 The proxy pool (`proxyPool.js`) is a 2-entry stub with deterministic domain-to-proxy mapping, not a real residential/mobile pool. It proves the abstraction exists and the rotation-on-failure pattern works.
 
@@ -18,7 +18,7 @@ The proxy pool (`proxyPool.js`) is a 2-entry stub with deterministic domain-to-p
 
 ---
 
-## 3. Where AI Was Used
+## 3. Where did you use AI tools, and what did you personally verify or change afterward?
 
 - **Claude** was used to scaffold the BullMQ queue config, circuit breaker state machine, and the selector fallback/quarantine pattern.
 - **AI-generated code was reviewed and modified:** failure thresholds in the circuit breaker were adjusted after testing against the sandbox's chaos toggle (the initial defaults opened the breaker too eagerly on transient 5% malformed responses).
