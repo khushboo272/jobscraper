@@ -6,9 +6,9 @@ A production-grade job scraping pipeline that demonstrates systems thinking abou
 
 ## Live Demo
 
-- **Frontend Dashboard:** [https://jobscraper-six.vercel.app/](https://jobscraper-six.vercel.app/)
-- **Backend API:** [https://job-ingestion-api.onrender.com](https://job-ingestion-api.onrender.com)
-- **Sandbox Source:** [https://job-ingestion-sandbox.onrender.com](https://job-ingestion-sandbox.onrender.com)
+- **Frontend Dashboard:** [https://jobscraper-pink.vercel.app/](https://jobscraper-pink.vercel.app/)
+- **Backend API:** [https://job-ingestion-api-x046.onrender.com](https://job-ingestion-api-x046.onrender.com)
+- **Sandbox Source:** [https://job-ingestion-sandbox-kh12.onrender.com](https://job-ingestion-sandbox-kh12.onrender.com)
 
 ---
 
