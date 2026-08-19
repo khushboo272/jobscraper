@@ -66,7 +66,7 @@ A production-grade job scraping pipeline that demonstrates systems thinking abou
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/aaniket21/jobscraper.git
+git clone https://github.com/khushboo272/jobscraper.git
 cd jobscraper
 ```
 
