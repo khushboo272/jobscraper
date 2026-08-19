@@ -16,8 +16,5 @@
       "src": "/(.*)",
       "dest": "apps/dashboard/$1"
     }
-  ],
-  "env": {
-    "VITE_API_URL": "@job_ingestion_api_url"
-  }
+  ]
 }
