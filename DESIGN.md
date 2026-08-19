@@ -39,7 +39,7 @@ Cost escalation only when needed — cheapest method first:
 | Tier | Method | When Used | Cost |
 |------|--------|-----------|------|
 | 0 | Public API/RSS (RemoteOK) | Always first for API-first sources | Lowest |
-| 1 | Static HTML fetch (axios + cheerio) | When API unavailable, source serves static HTML | Low |
+| 1 | Static HTML fetch (axios + cheerio) | When API unavailable, source serves static HTML (Indeed, LinkedIn, Naukri, Wellfound public pages) | Low |
 | 2 | Headless browser (Playwright + stealth) | When Tier 1 gets blocked or content requires JS | High |
 | 3 | Headful/human-paced session | Hardest targets — documented as escalation path, not run in demo | Highest |
 

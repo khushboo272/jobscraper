@@ -116,7 +116,7 @@ jobscraper/
 │   │   └── src/
 │   │       ├── ingestion/
 │   │       │   ├── strategies/ # StaticFetch, BrowserFetch, TierEscalation
-│   │       │   ├── sources/    # remoteok.js (Tier 0 adapter)
+│   │       │   ├── sources/    # remoteok, indeed, linkedin, naukri, wellfound
 │   │       │   ├── circuitBreaker.js
 │   │       │   ├── proxyPool.js
 │   │       │   ├── uaPool.js

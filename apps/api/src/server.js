@@ -8,6 +8,8 @@ const logger = pino({
     : undefined,
 });
 
+const { getAllSources } = require('./ingestion/sources/sourceRegistry.js');
+
 /**
  * In-memory source health registry.
  *
@@ -16,14 +18,7 @@ const logger = pino({
  *
  * In production this would be backed by Redis or the database.
  */
-const sourceRegistry = {
-  remoteok: {
-    health: 'healthy',
-    lastSuccess: new Date().toISOString(),
-    errorRate: 0,
-    totalRuns: 0,
-    failedRuns: 0,
-  },
+const sourceHealthRegistry = {
   sandbox: {
     health: 'healthy',
     lastSuccess: new Date().toISOString(),
@@ -32,6 +27,17 @@ const sourceRegistry = {
     failedRuns: 0,
   },
 };
+
+// Dynamically initialize all active sources
+getAllSources().forEach((source) => {
+  sourceHealthRegistry[source.SOURCE_NAME] = {
+    health: 'healthy',
+    lastSuccess: new Date().toISOString(),
+    errorRate: 0,
+    totalRuns: 0,
+    failedRuns: 0,
+  };
+});
 
 /**
  * In-memory listings cache.
@@ -73,7 +79,7 @@ function createApp() {
   // Per PRD §5.3: per-source health, last successful run, error rate
   app.get('/status', (req, res) => {
     const sources = {};
-    for (const [name, data] of Object.entries(sourceRegistry)) {
+    for (const [name, data] of Object.entries(sourceHealthRegistry)) {
       sources[name] = {
         health: data.health,
         lastSuccess: data.lastSuccess,
@@ -103,7 +109,7 @@ function createApp() {
  * Called by the ingestion pipeline after each run.
  */
 function updateSourceHealth(sourceName, success) {
-  const source = sourceRegistry[sourceName];
+  const source = sourceHealthRegistry[sourceName];
   if (!source) return;
 
   source.totalRuns++;
