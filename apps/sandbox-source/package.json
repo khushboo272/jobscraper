@@ -1,0 +1,16 @@
+{
+  "name": "job-ingestion-sandbox-source",
+  "version": "1.0.0",
+  "description": "Self-hosted hostile fake job board with chaos toggle for demo",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "test": "node --test src/**/*.test.js"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

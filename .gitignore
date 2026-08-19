@@ -1,0 +1,39 @@
+# === Agent / internal docs (not committed) ===
+AGENT_RULES.md
+HOW_TO_USE.md
+PRD.md
+TASK_LIST.md
+PREVIOUS_TASKS.md
+
+# === Dependencies ===
+node_modules/
+
+# === Environment ===
+.env
+.env.local
+.env.*.local
+
+# === Build output ===
+dist/
+build/
+
+# === Logs ===
+*.log
+npm-debug.log*
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+
+# === IDE ===
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# === Playwright ===
+test-results/
+playwright-report/
+
+# === Docker volumes (local) ===
+data/

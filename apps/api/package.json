@@ -1,0 +1,24 @@
+{
+  "name": "job-ingestion-api",
+  "version": "1.0.0",
+  "description": "Express API for the Resilient Job-Listing Ingestion Engine",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "test": "node --test src/**/*.test.js"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.19.0",
+    "bullmq": "^6.1.2",
+    "cheerio": "^1.2.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "ioredis": "^6.0.0",
+    "mongoose": "^9.9.3",
+    "pino": "^10.3.1",
+    "zod": "^4.4.3"
+  }
+}
