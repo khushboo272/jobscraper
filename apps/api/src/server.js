@@ -53,6 +53,17 @@ function createApp() {
   const app = express();
   app.use(express.json());
 
+  // CORS middleware for dashboard frontend
+  app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(204);
+    }
+    next();
+  });
+
   // Request logging middleware
   app.use((req, res, next) => {
     const start = Date.now();

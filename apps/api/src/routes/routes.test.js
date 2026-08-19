@@ -56,9 +56,10 @@ describe('API Routes', () => {
   });
 
   describe('GET /status', () => {
-    it('returns 200 with per-source health data', async () => {
+    it('returns 200 with per-source health data and CORS headers', async () => {
       const res = await get(assignedPort, '/status');
       assert.equal(res.statusCode, 200);
+      assert.equal(res.headers['access-control-allow-origin'], '*');
       const data = JSON.parse(res.body);
       assert.ok(data.sources, 'Should have sources object');
       assert.ok(typeof data.sources === 'object');

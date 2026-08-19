@@ -14,6 +14,12 @@ const connection = process.env.NODE_ENV === 'test' ? null : new Redis({
   maxRetriesPerRequest: null,
 });
 
+if (connection) {
+  connection.on('error', (err) => {
+    logger.error({ err: err.message }, 'Redis connection error (Ensure Docker container for Redis is running)');
+  });
+}
+
 // Circuit Breakers map
 const circuitBreakers = {};
 
