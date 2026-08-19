@@ -22,11 +22,43 @@ function get(port, path) {
 }
 
 /**
+ * Helper: make an HTTP POST request and return { statusCode, headers, body }
+ */
+function post(port, path, payload = {}) {
+  return new Promise((resolve, reject) => {
+    const dataString = JSON.stringify(payload);
+    const req = http.request(
+      {
+        hostname: '127.0.0.1',
+        port,
+        path,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(dataString),
+        },
+      },
+      (res) => {
+        let body = '';
+        res.on('data', (chunk) => { body += chunk; });
+        res.on('end', () => {
+          resolve({ statusCode: res.statusCode, headers: res.headers, body });
+        });
+      }
+    );
+    req.on('error', reject);
+    req.write(dataString);
+    req.end();
+  });
+}
+
+/**
  * Tests for Express API routes.
  *
  * Per PRD §5.3 & §7:
  * - /status — per-source health (healthy/degraded/down), last successful run, error rate
- * - /listings — normalized job listings
+ * - /listings — normalized job listings with query filters
+ * - /sync — manual trigger resync
  * - /health — basic health check
  */
 describe('API Routes', () => {
@@ -34,10 +66,17 @@ describe('API Routes', () => {
   let assignedPort;
 
   before(async () => {
-    const { createApp } = require('../server.js');
+    const { createApp, setListingsCache } = require('../server.js');
     const app = createApp();
     server = app.listen(0);
     assignedPort = server.address().port;
+
+    // Seed listings cache for testing filters
+    setListingsCache([
+      { id: '1', title: 'React Developer', company: 'TechCorp', location: 'Remote', source: 'sandbox', skills: ['React', 'JS'] },
+      { id: '2', title: 'Python Engineer', company: 'DataCo', location: 'New York', source: 'remoteok', skills: ['Python'] },
+      { id: '3', title: 'Full Stack Node Developer', company: 'WebInc', location: 'Remote', source: 'sandbox', skills: ['Node', 'React'] },
+    ]);
   });
 
   after(async () => {
@@ -90,6 +129,50 @@ describe('API Routes', () => {
       const res = await get(assignedPort, '/listings');
       const data = JSON.parse(res.body);
       assert.ok('total' in data, 'Should have total count');
+    });
+
+    it('filters listings by source query param', async () => {
+      const res = await get(assignedPort, '/listings?source=sandbox');
+      const data = JSON.parse(res.body);
+      assert.equal(data.listings.length, 2);
+      assert.ok(data.listings.every(l => l.source === 'sandbox'));
+    });
+
+    it('filters listings by search query param (matches title or skills)', async () => {
+      const res = await get(assignedPort, '/listings?search=Python');
+      const data = JSON.parse(res.body);
+      assert.equal(data.listings.length, 1);
+      assert.equal(data.listings[0].title, 'Python Engineer');
+    });
+
+    it('filters listings by location query param', async () => {
+      const res = await get(assignedPort, '/listings?location=Remote');
+      const data = JSON.parse(res.body);
+      assert.equal(data.listings.length, 2);
+    });
+  });
+
+  describe('POST /sync', () => {
+    it('triggers manual resync and returns execution results', async () => {
+      const res = await post(assignedPort, '/sync', { source: 'sandbox' });
+      assert.equal(res.statusCode, 200);
+      const data = JSON.parse(res.body);
+      assert.ok(['success', 'queued', 'failed'].includes(data.status));
+      assert.equal(data.source, 'sandbox');
+      assert.ok('results' in data || 'fetched' in data);
+    });
+
+    it('accepts custom scrape parameters (query and location)', async () => {
+      const res = await post(assignedPort, '/sync', {
+        source: 'sandbox',
+        query: 'React Engineer',
+        location: 'Remote'
+      });
+      assert.equal(res.statusCode, 200);
+      const data = JSON.parse(res.body);
+      assert.ok(['success', 'queued', 'failed'].includes(data.status));
+      assert.equal(data.query, 'React Engineer');
+      assert.equal(data.location, 'Remote');
     });
   });
 });

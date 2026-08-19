@@ -104,13 +104,51 @@ function createApp() {
   });
 
   // --- GET /listings ---
-  // Per PRD §7: table of normalized listings
+  // Per PRD §7: table of normalized listings with query filters
   app.get('/listings', (req, res) => {
+    let result = listingsCache;
+
+    const { source, search, location } = req.query;
+
+    if (source) {
+      result = result.filter((item) => item.source === source);
+    }
+
+    if (location) {
+      const locLower = location.toLowerCase();
+      result = result.filter((item) =>
+        (item.location || '').toLowerCase().includes(locLower)
+      );
+    }
+
+    if (search) {
+      const searchLower = search.toLowerCase();
+      result = result.filter((item) => {
+        const titleMatch = (item.title || '').toLowerCase().includes(searchLower);
+        const companyMatch = (item.company || '').toLowerCase().includes(searchLower);
+        const skillMatch = (item.skills || []).some((s) => s.toLowerCase().includes(searchLower));
+        return titleMatch || companyMatch || skillMatch;
+      });
+    }
+
     res.json({
-      listings: listingsCache,
-      total: listingsCache.length,
+      listings: result,
+      total: result.length,
       timestamp: new Date().toISOString(),
     });
+  });
+
+  // --- POST /sync ---
+  // Per PRD & User request: manual trigger resync with target search query & location filters
+  app.post('/sync', async (req, res) => {
+    const { source, query, location } = req.body || {};
+    try {
+      const { triggerManualSync } = require('./queue/orchestrator.js');
+      const resyncResult = await triggerManualSync(source, { query, location });
+      res.json(resyncResult);
+    } catch (err) {
+      res.status(500).json({ error: 'Failed to trigger sync', message: err.message });
+    }
   });
 
   return app;

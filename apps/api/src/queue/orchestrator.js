@@ -151,9 +151,64 @@ function initOrchestrator() {
   logger.info('Orchestrator Worker initialized.');
 }
 
+/**
+ * Manually trigger an immediate ingestion sync for one or all sources with optional custom query and location.
+ */
+async function triggerManualSync(sourceName, options = {}) {
+  const { query = 'developer', location = 'remote' } = options;
+  const queue = queues['job-ingestion'];
+  const sourcesToSync = sourceName && sourceName !== 'all' 
+    ? [sourceName] 
+    : getAllSources().map(s => s.SOURCE_NAME);
+
+  const results = [];
+  for (const src of sourcesToSync) {
+    try {
+      // Direct execution for immediate feedback
+      const syncResult = await processIngestionJob({
+        data: { source: src, query, location }
+      });
+      results.push({
+        source: src,
+        status: 'success',
+        fetched: syncResult.fetched || 0,
+        valid: syncResult.valid || 0,
+      });
+    } catch (err) {
+      results.push({
+        source: src,
+        status: 'failed',
+        error: err.message,
+      });
+
+      // Also try adding to queue if available
+      if (queue) {
+        await queue.add(
+          `manual-sync-${src}-${Date.now()}`,
+          { source: src, query, location }
+        ).catch(() => {});
+      }
+    }
+  }
+
+  const overallSuccess = results.some(r => r.status === 'success');
+  const overallStatus = overallSuccess ? 'success' : (results.length > 0 ? 'failed' : 'queued');
+
+  return {
+    status: overallStatus,
+    source: sourceName || 'all',
+    query,
+    location,
+    results,
+    fetched: results.reduce((acc, r) => acc + (r.fetched || 0), 0),
+    valid: results.reduce((acc, r) => acc + (r.valid || 0), 0),
+  };
+}
+
 module.exports = {
   processIngestionJob,
   initOrchestrator,
+  triggerManualSync,
   circuitBreakers,
   connection
 };
