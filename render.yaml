@@ -1,0 +1,48 @@
+# render.yaml — Render Blueprint for Job Ingestion Engine
+# Deploy API + Sandbox as web services using free tier.
+# See: https://render.com/docs/blueprint-spec
+
+services:
+  # --- API Server ---
+  - type: web
+    name: job-ingestion-api
+    env: node
+    region: oregon
+    plan: free
+    rootDir: apps/api
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PORT
+        value: "3000"
+      - key: MONGO_URI
+        fromGroup: job-ingestion-secrets
+      - key: REDIS_HOST
+        fromGroup: job-ingestion-secrets
+      - key: REDIS_PORT
+        value: "6379"
+
+  # --- Sandbox Hostile Source ---
+  - type: web
+    name: job-ingestion-sandbox
+    env: node
+    region: oregon
+    plan: free
+    rootDir: apps/sandbox-source
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SANDBOX_PORT
+        value: "3001"
+
+envVarGroups:
+  - name: job-ingestion-secrets
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: REDIS_HOST
+        sync: false

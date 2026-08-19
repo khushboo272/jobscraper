@@ -1,0 +1,23 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "name": "job-ingestion-dashboard",
+  "builds": [
+    {
+      "src": "apps/dashboard/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "apps/dashboard/$1"
+    }
+  ],
+  "env": {
+    "VITE_API_URL": "@job_ingestion_api_url"
+  }
+}
